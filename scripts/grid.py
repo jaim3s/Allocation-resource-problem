@@ -21,7 +21,7 @@ class Grid:
         __repr__(self) -> str:
             Represents the grid in a string format for data structures.
         create_grid(self) -> np.ndarray:
-            Create an empty numpy array for save the nodes.
+            Create an empty numpy array for save the agents.
     """
 
     def __init__(self, rows: int, cols: int) -> None:
@@ -56,13 +56,13 @@ class Grid:
 
     def create_grid(self) -> np.ndarray:
         """
-        Create an empty numpy array for save the nodes.
+        Create an empty numpy array for save the agents.
 
             Parameters
                 None
     
             Returns
-                return Numpy array for save nodes
+                return Numpy array for save agents
         """
 
         return np.zeros(shape=(self.rows, self.cols), dtype=str)
