@@ -17,8 +17,10 @@ class Generator:
 
         generate_unique_numbers(self, min_value: int, max_value: int) -> List[int]:
             Generate random unique numbers.
-        generate_numbers(self, min_value: int, max_value: int) -> List[int]:
-            Generate random numbers.
+        generate_integer_numbers(self, min_value: int, max_value: int) -> List[int]:
+            Generate random integer numbers.
+        generate_float_numbers(self, min_value: float, max_value: float, precision: int) -> List[int]:
+            Generate random float numbers.
         generate_unique_pairs(self, min_value1: int, max_value1: int, min_value2: int, max_value2: int) -> List[int]:
             Generate random unique pairs of numbers.
     """
@@ -43,19 +45,42 @@ class Generator:
             unique_numbers.add(random.randint(min_value, max_value))
         return list(unique_numbers)
 
-    def generate_numbers(self, min_value: int, max_value: int) -> List[int]:
+    def generate_integer_numbers(self, min_value: int, max_value: int) -> List[int]:
         """
-        Generate random numbers.
+        Generate random integer numbers.
 
             Parameters
-                min_value (int): Minimal value
-                max_value (int): Maximal value
+                min_value (int): Minimal integer value
+                max_value (int): Maximal integer value
     
             Returns
-                return List with random numbers
+                return List with random integer numbers
         """
 
         return [random.randint(min_value, max_value) for _ in range(self.n)]
+
+    def generate_float_numbers(self, min_value: float, max_value: float, precision: int) -> List[int]:
+        """
+        Generate random float numbers.
+
+            Parameters
+                min_value (float): Minimal float value
+                max_value (float): Maximal float value
+                precision (int): Precision of the random numbers
+    
+            Returns
+                return List with random float numbers
+        """
+
+        random_float_numbers = []
+    
+        for _ in range(self.n):
+            random_float = random.uniform(min_value, max_value)
+            format_str = "{:." + str(precision) + "f}"
+            formatted_float = float(format_str.format(random_float))
+            random_float_numbers.append(formatted_float)
+        
+        return random_float_numbers
 
     def generate_unique_pairs(self, min_value1: int, max_value1: int, min_value2: int, max_value2: int) -> List[int]:
         """

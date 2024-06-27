@@ -18,7 +18,7 @@ class Graph:
             Represents the graph in a string format.
         __repr__(self) -> str:
             Represents the graph in a string format for data structures.
-        add_agent(self, tag: str, value: float) -> None:
+        add_agent(self, tag: str, value: float, radius: float) -> None:
             Add a new agent to the graph.
         add_edge(self, tag1: str, tag2: str) -> None:
             Add a new edge to the graph.
@@ -67,20 +67,21 @@ class Graph:
 
         return str(self.agents)
 
-    def add_agent(self, tag: str, value: float) -> None:
+    def add_agent(self, tag: str, value: float, radius: float) -> None:
         """
         Add a new agent to the graph.
 
             Parameters
                 tag (str): Tag/id of the agent
                 value (float): Value of the agent
+                radius (float): Radius of the agent
     
             Returns
                 return None
         """
 
         if tag not in self.agents:
-            self.agents[tag] = Agent(tag, value)
+            self.agents[tag] = Agent(tag, value,radius)
 
     def add_edge(self, tag1: str, tag2: str) -> None:
         """
@@ -96,7 +97,6 @@ class Graph:
 
         if tag1 in self.agents and tag2 in self.agents:
             self.agents[tag1].add_neighbor(self.agents[tag2])
-            self.agents[tag2].add_neighbor(self.agents[tag1])
 
     def remove_agent(self, tag: str) -> None:
         """

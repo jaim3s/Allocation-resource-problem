@@ -1,4 +1,5 @@
 from typing import List, Tuple
+import math
 
 class Agent:
     """
@@ -11,6 +12,8 @@ class Agent:
             Tag/id of the agent
         value : float
             Value of the agent
+        radius : float
+            Radius of the agent
         neighbors : list
             List of neighbor agents
         row : int
@@ -19,6 +22,8 @@ class Agent:
             Column position of the agent
         tasks : list
             List of tasks
+        selected_tasks : list
+            List of selected tasks
 
         Methods
         -------
@@ -31,17 +36,21 @@ class Agent:
             Add a new agent to the neighbors list.
         remove_neighbor(self, neighbor: "agent") -> None:
             Remove a agent from the neighbors list.
+        in_neighborhood(self, x_pos: int, y_pos: int) -> bool:
+            Check if the other agent is inside the agent radius.
         get_selected_tasks(self, selected_tasks: List[List[float]]) -> List[int]:
             Get the selected tasks of the agent.
-        get_allocation_resources_score(self) -> float:
-            Get the best allocation score.
+        get_allocation_resources_score(self) -> Tuple[float, list]:
+            Get the best allocation score and the list of selected tasks.
     """
 
-    def __init__(self, tag: str, value: float) -> None:
+    def __init__(self, tag: str, value: float, radius: float) -> None:
         self.tag = tag
         self.value = value
+        self.radius = radius
         self.neighbors = []
         self.tasks = []
+        self.selected_tasks = []
         self.row, self.col = None, None
 
     def __str__(self) -> str:
@@ -97,6 +106,20 @@ class Agent:
 
         if neighbor in self.neighbors:
             self.neighbors.remove(neighbor)
+
+    def in_neighborhood(self, x_pos: int, y_pos: int) -> bool:
+        """
+        Check if the other agent is inside the agent radius.
+
+            Parameters
+                x_pos (int): x position of the agent
+                y_pos (int): y position of the agent
+    
+            Returns
+                return True if the agent is in the neighborhood otherwise False
+        """
+
+        return math.sqrt((x_pos - self.col)**2 + (y_pos - self.row)**2) <= self.radius
 
     def get_selected_tasks(self, selected_tasks: List[List[float]]) -> List[int]:
         """

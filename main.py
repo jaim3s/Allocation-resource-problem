@@ -5,8 +5,8 @@
 Python program for simulating Ad Hoc networks and the partition tasking problem
 """
 
+from scripts.program import Program
 from scripts.adhoc_network import AdHocNetwork
-from scripts.generator import Generator
 
 
 def main():
@@ -14,14 +14,16 @@ def main():
     Run code.
     """
 
-    num_nodes = 3
-    connection_probability = 0.3
+    num_agents = 5
+    connection_probability = 1.0
+    program = Program()
+    program.delete_folders()
     adhoc_network = AdHocNetwork(
         width = 100.0,
         height = 100.0,
         width_span = 10.0,
         height_span = 10.0,
-        num_agents = num_nodes,
+        num_agents = num_agents,
         connection_probability = connection_probability
     )
     adhoc_network.run()
