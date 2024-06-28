@@ -1,21 +1,12 @@
-import matplotlib.pyplot as plt
+import random
 
-# Create a figure and axis
-fig, ax = plt.subplots()
+class A:
+    def __init__(self, seed):
+        random.seed(seed)
 
-# Draw an arrow
-ax.annotate("", xy=(0.5, 0.5), xytext=(0, 0),
-            arrowprops=dict(arrowstyle="->"))
+    def func(self, a, b):
+        return random.randint(a, b)
 
-# Set limits to ensure the arrow is well placed
-ax.set_xlim(0, 1)
-ax.set_ylim(0, 1)
+a = A(10)
 
-# Add a grid
-ax.grid(True)
-
-# Add a title
-ax.set_title('Arrow Example')
-
-# Display the plot
-plt.show()
+print(a.func(2, 4))

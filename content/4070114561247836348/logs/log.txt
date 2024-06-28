@@ -1,0 +1,21 @@
+Simulation stats
+Agents:
+(0, 5)->[]
+(1, 2)->[]
+(2, 4)->[]
+(3, 2)->[]
+(4, 1)->[]
+
+Simulation finished
+Seed ID: 4070114561247836348
+Iterations: 6
+Agents:
+(0, 0)->[(1, 74), (4, 99)]
+(1, 0)->[(2, 77)]
+(2, 0)->[(1, 77), (3, 98)]
+(3, 0)->[(2, 74)]
+(4, 0)->[(1, 93)]
+
+General stats
+Total score: 592
+Total number of tasks: 7

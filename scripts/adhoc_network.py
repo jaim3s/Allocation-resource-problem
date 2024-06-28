@@ -26,6 +26,10 @@ class AdHocNetwork:
             Number of agents in the network
         connection_probability : float
             Connection probability between agents
+        mobility_model : str
+            Mobility model of the agents in the network
+        seed_id : int
+            Seed id of the simulation
 
         Methods
         -------
@@ -48,6 +52,8 @@ class AdHocNetwork:
             Install the graph in the grid.
         create_edges(self, graph: "Graph") -> None:
             Create the edges of the network.
+        brownian_motion(self, step_size: int) -> None:
+            Apply the brownian motion mobility model.
         show_network(self) -> None:
             Show the network.
         create_tasks(self, m: int, min_size: int, max_size: int, min_value: int, max_value: int) -> List["Task"]:
@@ -68,20 +74,25 @@ class AdHocNetwork:
         "width_span"               : float,
         "height_span"              : float,
         "connection_probability"   : float,
-        "num_agents"                : int,
+        "num_agents"               : int,
+        "mobility_model"           : str,
+        "seed_id"                  : int,
     }
 
     def __init__(self, **kwargs: dict) -> None:
         # Validate the kwargs arguments
-        self.validate_kwargs(kwargs, self.valid_kwargs) 
+        self.validate_kwargs(kwargs, self.valid_kwargs)
+        if self.seed_id == -1:
+            self.seed_id = random.randrange(sys.maxsize)
+        random.seed(self.seed_id)
         self.rows, self.cols = math.floor(self.height/self.height_span), math.floor(self.width/self.width_span)
         self.grid = self.create_grid()
         self.graph = self.create_graph()
         self.install_graph(self.graph)
         self.create_edges(self.graph)
         self.tasks = self.create_tasks(self.num_agents*3, 1, self.graph.get_max_value(), 1, 100)
-        self.seed_id = random.randrange(sys.maxsize)
-        random.seed(self.seed_id)
+        # Generate a random seed
+
 
     def validate_kwargs(self, kwargs: dict, valid_kwargs: dict) -> None:
         """
@@ -175,7 +186,7 @@ class AdHocNetwork:
                 return Graph of the network
         """
 
-        generator = Generator(self.num_agents)
+        generator = Generator(self.num_agents, self.seed_id)
         # Generate random tags and values
         tags = generator.generate_unique_numbers(0, self.num_agents-1)
         values = generator.generate_integer_numbers(1, self.num_agents)
@@ -208,7 +219,7 @@ class AdHocNetwork:
                 return None
         """
 
-        generator = Generator(self.num_agents)
+        generator = Generator(self.num_agents, self.seed_id)
         # Generate unique pairs of numbers
         unique_pairs = generator.generate_unique_pairs(0, self.rows-1, 0, self.cols-1)
         for idx, agent_tag in enumerate(graph.agents):
@@ -233,7 +244,22 @@ class AdHocNetwork:
             for agent2 in graph.agents:
                 if agent1 != agent2 and graph.agents[agent1].in_neighborhood(graph.agents[agent2].col, graph.agents[agent2].row) == True:
                     if random.random() < self.connection_probability:
-                        graph.add_edge(agent1, agent2) 
+                        graph.add_edge(agent1, agent2)
+
+    def brownian_motion(self, step_size: int) -> None:
+        """
+        Apply the brownian motion mobility model.
+
+            Parameters
+                step_size (int): Size of each step
+
+            Returns
+                return None
+        """
+
+        for agent in self.graph.agents:
+            new_row, new_col = self.graph.agents[agent].brownian_motion(step_size)
+            self.graph.agents[agent].update_position(new_row, new_col)
 
     def show_network(self) -> None:
         """
@@ -364,9 +390,13 @@ class AdHocNetwork:
         # Create paths and folders
         self.create_paths()
         self.create_folders()
-        result = ""
-        print("tasks", self.tasks)
+        log_text, iterations = "Simulation stats\nAgents:\n", 0
+
+        for agent in self.graph.agents:
+            log_text += self.graph.agents[agent].__str__() + "->" + str(self.graph.agents[agent].selected_tasks) + "\n"
+
         while self.tasks != []:
+            iterations += 1
             self.assign_tasks(self.tasks)
             agents_results = {}
             for agent in self.graph.agents:
@@ -383,27 +413,36 @@ class AdHocNetwork:
                 # Sort tasks_agents in function of the value (size)
                 sorted_task_agents = sorted(task_agents, key=lambda agent: self.graph.agents[agent].value)
                 perfect_agent = False
-                # Find the best agent for the task
+                # Check if exist the best agent for the task
                 for agent in sorted_task_agents:
                     # Perfect case
                     if self.graph.agents[agent].value == self.tasks[task_idx].size:
                         self.graph.agents[agent].selected_tasks.append(self.tasks[task_idx])
                         self.graph.agents[agent].value = 0
                         perfect_agent = True
-                if perfect_agent == True:
-                    print("Perfect agent found")
-                else:
-                    best_agent = sorted_task_agents.pop(0)
+                        break
+                if perfect_agent == False:
+                    best_agent = sorted_task_agents.pop()
                     self.graph.agents[best_agent].selected_tasks.append(self.tasks[task_idx])
                     self.graph.agents[best_agent].value -= self.tasks[task_idx].size
                 # Remove the task
                 self.tasks.pop(task_idx)
             else:
+                for agent in self.graph.agents:
+                    if agents_results[agent]["score"] > 0:
+                        for task_idx in agents_results[agent]["selected_tasks"]:
+                            self.graph.agents[agent].selected_tasks.append(self.tasks[task_idx])
+                            self.graph.agents[agent].value -= self.tasks[task_idx].size
                 break
-                print("Solution found!")
 
+        log_text += f"\nSimulation finished\nSeed ID: {str(self.seed_id)}\nIterations: {str(iterations)}\nAgents:\n"
+
+        total_num_selected_tasks, total_score = 0, 0
         for agent in self.graph.agents:
-            print(agent, self.graph.agents[agent], self.graph.agents[agent].selected_tasks)
-        
-        result += f"Simulation finished\nSeed ID: {str(self.seed_id)}"
-        self.log(f"log.txt", result)
+            log_text += self.graph.agents[agent].__str__() + "->" + str(self.graph.agents[agent].selected_tasks) + "\n"
+            total_num_selected_tasks += len(self.graph.agents[agent].selected_tasks)
+            total_score += sum([task.value for task in self.graph.agents[agent].selected_tasks])
+
+        log_text += f"\nGeneral stats\nTotal score: {total_score}\nTotal number of tasks: {total_num_selected_tasks}"
+
+        self.log(f"log.txt", log_text)

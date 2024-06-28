@@ -1,0 +1,7 @@
+width = 100.0
+height = 100.0
+width_span = 10.0
+height_span = 10.0
+num_agents = 5
+connection_probability = 0.7
+mobility_model = "brownian_motion"

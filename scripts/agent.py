@@ -1,5 +1,5 @@
 from typing import List, Tuple
-import math
+import math, numpy as np
 
 class Agent:
     """
@@ -38,6 +38,10 @@ class Agent:
             Remove a agent from the neighbors list.
         in_neighborhood(self, x_pos: int, y_pos: int) -> bool:
             Check if the other agent is inside the agent radius.
+        brownian_motion(self, step_size: int) -> None:
+            Brownian motion for the agent.
+        update_position(self, new_row: int, new_col: int) -> None:
+            Update the position of the agent.
         get_selected_tasks(self, selected_tasks: List[List[float]]) -> List[int]:
             Get the selected tasks of the agent.
         get_allocation_resources_score(self) -> Tuple[float, list]:
@@ -120,6 +124,38 @@ class Agent:
         """
 
         return math.sqrt((x_pos - self.col)**2 + (y_pos - self.row)**2) <= self.radius
+
+    def brownian_motion(self, step_size: int) -> Tuple[int, int]:
+        """
+        Brownian motion for the agent.
+
+            Parameters
+                step_size (int): Size of each step
+
+            Returns
+                return The new agent position based on the brownian motion
+        """
+
+        # Perform Brownian motion simulation
+        dx = np.random.choice([-1, 1]) * step_size
+        dy = np.random.choice([-1, 1]) * step_size
+        return self.row+dx, self.col+dy
+        
+
+    def update_position(self, new_row: int, new_col: int) -> None:
+        """
+        Update the position of the agent.
+
+            Parameters
+                new_row (int): New row position of the agent
+                new_col (int): New column position of the agent
+
+            Returns
+                return None
+        """
+
+        self.row = new_row
+        self.col = new_col
 
     def get_selected_tasks(self, selected_tasks: List[List[float]]) -> List[int]:
         """

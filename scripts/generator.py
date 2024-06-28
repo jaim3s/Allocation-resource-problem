@@ -25,8 +25,10 @@ class Generator:
             Generate random unique pairs of numbers.
     """
 
-    def __init__(self, n: int) -> None:
+    def __init__(self, n: int, seed_id: int) -> None:
         self.n = n
+        self.seed_id = seed_id
+        random.seed(self.seed_id)
 
     def generate_unique_numbers(self, min_value: int, max_value: int) -> List[int]:
         """
