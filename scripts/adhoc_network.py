@@ -2,9 +2,9 @@ from scripts.grid import Grid
 from scripts.graph import Graph
 from scripts.task import Task
 from scripts.generator import Generator
+from scripts.visual_graph import VisualGraph
 from typing import List
-import matplotlib.pyplot as plt
-import random, math, os, sys, scripts.constants, numpy as np
+import random, math, os, sys, scripts.constants, numpy as np, pandas as pd
 
 
 class AdHocNetwork:
@@ -14,6 +14,8 @@ class AdHocNetwork:
         Attributes
         ----------
 
+        seed_id : int
+            Seed id of the simulation
         width : float
             Width of the grid
         height : float
@@ -22,14 +24,16 @@ class AdHocNetwork:
             Width of the each span
         height_span : float
             Height of the each span
-        num_agents : int
-            Number of agents in the network
         connection_probability : float
             Connection probability between agents
+        num_agents : int
+            Number of agents in the network
+        num_tasks : int
+            Number of tasks
         mobility_model : str
             Mobility model of the agents in the network
-        seed_id : int
-            Seed id of the simulation
+        generator : "Generator"
+            Generator of random numbers
 
         Methods
         -------
@@ -56,7 +60,7 @@ class AdHocNetwork:
             Apply the brownian motion mobility model.
         show_network(self) -> None:
             Show the network.
-        create_tasks(self, m: int, min_size: int, max_size: int, min_value: int, max_value: int) -> List["Task"]:
+        create_tasks(self, min_size: int, max_size: int, min_value: int, max_value: int) -> List["Task"]:
             Create tasks.
         assign_tasks(self, tasks) -> None:
             Assign tasks to the agents.
@@ -69,30 +73,35 @@ class AdHocNetwork:
     """
 
     valid_kwargs = {
+        "seed_id"                  : int,
         "width"                    : float,
         "height"                   : float,
         "width_span"               : float,
         "height_span"              : float,
         "connection_probability"   : float,
         "num_agents"               : int,
+        "num_tasks"                : int,
         "mobility_model"           : str,
-        "seed_id"                  : int,
     }
 
     def __init__(self, **kwargs: dict) -> None:
         # Validate the kwargs arguments
         self.validate_kwargs(kwargs, self.valid_kwargs)
+        # Create paths and folders
+        self.create_paths()
+        self.create_folders()
+        # Generate a random seed
         if self.seed_id == -1:
             self.seed_id = random.randrange(sys.maxsize)
         random.seed(self.seed_id)
+        self.generator = Generator(self.num_agents, self.seed_id)
         self.rows, self.cols = math.floor(self.height/self.height_span), math.floor(self.width/self.width_span)
         self.grid = self.create_grid()
         self.graph = self.create_graph()
         self.install_graph(self.graph)
         self.create_edges(self.graph)
-        self.tasks = self.create_tasks(self.num_agents*3, 1, self.graph.get_max_value(), 1, 100)
-        # Generate a random seed
-
+        self.tasks = self.create_tasks(1, self.graph.get_max_value(), 1, 100, 60, 120)
+        self.visual_graph = VisualGraph(str(self.seed_id), self.cols+1, self.rows+1, list(self.graph.agents.values()), self.graphs_path, "network.png")
 
     def validate_kwargs(self, kwargs: dict, valid_kwargs: dict) -> None:
         """
@@ -186,11 +195,10 @@ class AdHocNetwork:
                 return Graph of the network
         """
 
-        generator = Generator(self.num_agents, self.seed_id)
         # Generate random tags and values
-        tags = generator.generate_unique_numbers(0, self.num_agents-1)
-        values = generator.generate_integer_numbers(1, self.num_agents)
-        radius = generator.generate_float_numbers(0, 5, 0)
+        tags = self.generator.generate_unique_numbers(0, self.num_agents-1)
+        values = self.generator.generate_integer_numbers(1, self.num_agents)
+        radius = self.generator.generate_float_numbers(5, 5, 0)
         for i in range(self.num_agents):
             graph.add_agent(str(tags[i]), values[i], radius[i])
         return graph
@@ -219,9 +227,8 @@ class AdHocNetwork:
                 return None
         """
 
-        generator = Generator(self.num_agents, self.seed_id)
         # Generate unique pairs of numbers
-        unique_pairs = generator.generate_unique_pairs(0, self.rows-1, 0, self.cols-1)
+        unique_pairs = self.generator.generate_unique_pairs(0, self.rows-1, 0, self.cols-1)
         for idx, agent_tag in enumerate(graph.agents):
             # Assign the position to the agents and the grid 
             row, col = unique_pairs[idx]
@@ -283,10 +290,17 @@ class AdHocNetwork:
 
         ax.grid(True, which="both", linestyle="--", linewidth=0.5, color="gray")
 
+        # Add invisible points with labels
+        plt.plot([], [], " ", label="asd")
+
+        plt.legend()
+
         # Draw agents
         for agent_tag in self.graph.agents:
             x, y = self.graph.agents[agent_tag].col+1, self.graph.agents[agent_tag].row+1
-            ax.text(
+
+            # Get the agent node
+            agent_node = ax.text(
                 x=x, 
                 y=y, 
                 s=self.graph.agents[agent_tag].tag, 
@@ -307,22 +321,29 @@ class AdHocNetwork:
         plt.savefig(self.graphs_path + "\\network.png")
         plt.show()
 
-    def create_tasks(self, m: int, min_size: int, max_size: int, min_value: int, max_value: int) -> List["Task"]:
+    def create_tasks(self, min_size: int, max_size: int, min_value: int, max_value: int, min_time: float, max_time: float) -> List["Task"]:
         """
         Create tasks.
 
             Parameters
-                m (int): Number of tasks
                 min_size (int): Minimal size of tasks
-                max_size (int): Maximal size of tasks
+                max_size (int): Maximum size of tasks
                 min_value (int): Minimal value of tasks
-                max_value (int): Maximal value of tasks
+                max_value (int): Maximum value of tasks
+                min_time (float): Minimal time of tasks
+                max_time (float): Maximum time of tasks
 
             Returns
                 return List of tasks
         """
 
-        return [Task(random.randint(min_size, max_size), random.randint(min_value, max_value)) for i in range(m)]
+        return [
+            Task(
+                random.randint(min_size, max_size),
+                random.randint(min_value, max_value),
+                random.randint(min_time, max_time)
+                ) for i in range(self.num_tasks)
+        ]
 
     def assign_tasks(self, tasks) -> None:
         """
@@ -337,6 +358,19 @@ class AdHocNetwork:
 
         for agent in self.graph.agents:
             self.graph.agents[agent].tasks = tasks
+
+    def save_tasks(self, tasks) -> None:
+        """
+        Save the tasks of the network.
+
+            Parameters
+                tasks (List["Task"]): List of tasks
+
+            Returns
+                return None
+        """
+
+        pd.DataFrame([(task.size, task.value, task.time) for task in tasks]).to_csv(self.log_path + f"\\tasks.csv", index=False)
 
     def count_collisions(self, agents_results: dict) -> dict:
         """
@@ -387,13 +421,16 @@ class AdHocNetwork:
                 return None
         """
 
-        # Create paths and folders
-        self.create_paths()
-        self.create_folders()
+        # Save tasks as a CSV file
+        self.save_tasks(self.tasks)
+
         log_text, iterations = "Simulation stats\nAgents:\n", 0
 
         for agent in self.graph.agents:
             log_text += self.graph.agents[agent].__str__() + "->" + str(self.graph.agents[agent].selected_tasks) + "\n"
+
+        # Assign the task to each agent
+        
 
         while self.tasks != []:
             iterations += 1
@@ -417,22 +454,19 @@ class AdHocNetwork:
                 for agent in sorted_task_agents:
                     # Perfect case
                     if self.graph.agents[agent].value == self.tasks[task_idx].size:
-                        self.graph.agents[agent].selected_tasks.append(self.tasks[task_idx])
-                        self.graph.agents[agent].value = 0
+                        self.graph.agents[agent].assign_task(self.tasks[task_idx])
                         perfect_agent = True
                         break
                 if perfect_agent == False:
                     best_agent = sorted_task_agents.pop()
-                    self.graph.agents[best_agent].selected_tasks.append(self.tasks[task_idx])
-                    self.graph.agents[best_agent].value -= self.tasks[task_idx].size
-                # Remove the task
+                    self.graph.agents[best_agent].assign_task(self.tasks[task_idx])
+                # Remove the tasksk
                 self.tasks.pop(task_idx)
             else:
                 for agent in self.graph.agents:
                     if agents_results[agent]["score"] > 0:
                         for task_idx in agents_results[agent]["selected_tasks"]:
-                            self.graph.agents[agent].selected_tasks.append(self.tasks[task_idx])
-                            self.graph.agents[agent].value -= self.tasks[task_idx].size
+                            self.graph.agents[agent].assign_task(self.tasks[task_idx])
                 break
 
         log_text += f"\nSimulation finished\nSeed ID: {str(self.seed_id)}\nIterations: {str(iterations)}\nAgents:\n"

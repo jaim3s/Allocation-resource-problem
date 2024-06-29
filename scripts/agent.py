@@ -24,6 +24,9 @@ class Agent:
             List of tasks
         selected_tasks : list
             List of selected tasks
+        state : int
+            Define the state of the agent
+                state (0) -> The agent is not working
 
         Methods
         -------
@@ -42,6 +45,8 @@ class Agent:
             Brownian motion for the agent.
         update_position(self, new_row: int, new_col: int) -> None:
             Update the position of the agent.
+        assign_task(self, task: "Task") -> None:
+            Assign the task to the agent.
         get_selected_tasks(self, selected_tasks: List[List[float]]) -> List[int]:
             Get the selected tasks of the agent.
         get_allocation_resources_score(self) -> Tuple[float, list]:
@@ -55,6 +60,7 @@ class Agent:
         self.neighbors = []
         self.tasks = []
         self.selected_tasks = []
+        self.state = 0
         self.row, self.col = None, None
 
     def __str__(self) -> str:
@@ -140,7 +146,6 @@ class Agent:
         dx = np.random.choice([-1, 1]) * step_size
         dy = np.random.choice([-1, 1]) * step_size
         return self.row+dx, self.col+dy
-        
 
     def update_position(self, new_row: int, new_col: int) -> None:
         """
@@ -156,6 +161,20 @@ class Agent:
 
         self.row = new_row
         self.col = new_col
+
+    def assign_task(self, task: "Task") -> None:
+        """
+        Assign the task to the agent.
+
+            Parameters
+                task ("Task"): The task to assign
+
+            Returns
+                return None
+        """
+
+        self.selected_tasks.append(task)
+        self.value -= task.size
 
     def get_selected_tasks(self, selected_tasks: List[List[float]]) -> List[int]:
         """

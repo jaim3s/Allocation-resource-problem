@@ -24,12 +24,13 @@ def main():
         width_span = 10.0,
         height_span = 10.0,
         num_agents = num_agents,
+        num_tasks = num_agents*3,
         connection_probability = connection_probability,
         mobility_model = "brownian_motion",
         seed_id = 4070114561247836348
     )
     adhoc_network.run()
-    adhoc_network.show_network()
+    adhoc_network.visual_graph.show_visual_graph()
     
 if __name__ == "__main__": 
     main()
