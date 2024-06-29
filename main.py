@@ -24,7 +24,7 @@ def main():
         width_span = 10.0,
         height_span = 10.0,
         num_agents = num_agents,
-        num_tasks = num_agents*3,
+        num_tasks = 5,
         connection_probability = connection_probability,
         mobility_model = "brownian_motion",
         seed_id = 4070114561247836348

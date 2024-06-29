@@ -34,6 +34,10 @@ class AdHocNetwork:
             Mobility model of the agents in the network
         generator : "Generator"
             Generator of random numbers
+        groups : List[List["Agent"]]
+            List of groups of agents
+        visual_graph : "VisualGraph"
+            Visual graph object
 
         Methods
         -------
@@ -58,16 +62,20 @@ class AdHocNetwork:
             Create the edges of the network.
         brownian_motion(self, step_size: int) -> None:
             Apply the brownian motion mobility model.
-        show_network(self) -> None:
-            Show the network.
         create_tasks(self, min_size: int, max_size: int, min_value: int, max_value: int) -> List["Task"]:
             Create tasks.
-        assign_tasks(self, tasks) -> None:
+        create_initial_tasks(self) -> None:
             Assign tasks to the agents.
+        save_tasks(self, tasks, filename: str) -> None:
+            Save the tasks of the network.
         count_collisions(self, agents_results: dict) -> dict:
             Get the agents in the selected tasks.
         check_collisions(self, tasks_counter: dict) -> bool:
             Check the collisions in the selected tasks.
+        join_tasks(self, group: List["Agent"]) -> List["Task"]:
+            Join the tasks of the group
+        assign_tasks(self, group: List["Agent"], tasks: List["Task"]) -> List["Task"]:
+            Assign the tasks to the agents in the group.
         run(self) -> None:
             Run the Ad Hoc Network.
     """
@@ -100,8 +108,8 @@ class AdHocNetwork:
         self.graph = self.create_graph()
         self.install_graph(self.graph)
         self.create_edges(self.graph)
-        self.tasks = self.create_tasks(1, self.graph.get_max_value(), 1, 100, 60, 120)
-        self.visual_graph = VisualGraph(str(self.seed_id), self.cols+1, self.rows+1, list(self.graph.agents.values()), self.graphs_path, "network.png")
+        self.groups = self.graph.create_groups()
+        self.visual_graph = VisualGraph(str(self.seed_id), self.cols+1, self.rows+1, self.groups, self.graphs_path, "network.png")
 
     def validate_kwargs(self, kwargs: dict, valid_kwargs: dict) -> None:
         """
@@ -198,7 +206,7 @@ class AdHocNetwork:
         # Generate random tags and values
         tags = self.generator.generate_unique_numbers(0, self.num_agents-1)
         values = self.generator.generate_integer_numbers(1, self.num_agents)
-        radius = self.generator.generate_float_numbers(5, 5, 0)
+        radius = self.generator.generate_float_numbers(3, 3, 0)
         for i in range(self.num_agents):
             graph.add_agent(str(tags[i]), values[i], radius[i])
         return graph
@@ -268,59 +276,6 @@ class AdHocNetwork:
             new_row, new_col = self.graph.agents[agent].brownian_motion(step_size)
             self.graph.agents[agent].update_position(new_row, new_col)
 
-    def show_network(self) -> None:
-        """
-        Show the network.
-
-            Parameters
-                None
-
-            Returns
-                return None
-        """
-
-        # Create a figure and axis
-        fig, ax = plt.subplots()
-
-        ax.set_title(f"Network - {self.seed_id}")
-
-        # Set x and y axis
-        ax.set_xlim(0, self.cols+1)
-        ax.set_ylim(0, self.rows+1)
-
-        ax.grid(True, which="both", linestyle="--", linewidth=0.5, color="gray")
-
-        # Add invisible points with labels
-        plt.plot([], [], " ", label="asd")
-
-        plt.legend()
-
-        # Draw agents
-        for agent_tag in self.graph.agents:
-            x, y = self.graph.agents[agent_tag].col+1, self.graph.agents[agent_tag].row+1
-
-            # Get the agent node
-            agent_node = ax.text(
-                x=x, 
-                y=y, 
-                s=self.graph.agents[agent_tag].tag, 
-                ha="center", 
-                va="center", 
-                fontsize=12, 
-                color="black", 
-                bbox=dict(facecolor="none", edgecolor="black", boxstyle="circle")
-            )
-
-            circle = plt.Circle((x, y), self.graph.agents[agent_tag].radius, color="red", fill=False, linestyle="--")
-            ax.add_artist(circle)
-
-            for neighbor in self.graph.agents[agent_tag].neighbors:
-                ax.annotate("", xy=(neighbor.col+1, neighbor.row+1), xytext=(x, y),
-                    arrowprops=dict(arrowstyle="->"))
-        
-        plt.savefig(self.graphs_path + "\\network.png")
-        plt.show()
-
     def create_tasks(self, min_size: int, max_size: int, min_value: int, max_value: int, min_time: float, max_time: float) -> List["Task"]:
         """
         Create tasks.
@@ -345,32 +300,36 @@ class AdHocNetwork:
                 ) for i in range(self.num_tasks)
         ]
 
-    def assign_tasks(self, tasks) -> None:
+    def create_initial_tasks(self) -> None:
         """
         Assign tasks to the agents.
 
             Parameters
-                tasks (List["Task"]): List of tasks
+                None
 
             Returns
                 return None
         """
 
+        max_value = self.graph.get_max_value()
         for agent in self.graph.agents:
-            self.graph.agents[agent].tasks = tasks
+            self.graph.agents[agent].tasks = self.create_tasks(1, max_value, 1, 100, 60, 120)
 
-    def save_tasks(self, tasks) -> None:
+    def save_tasks(self, filename: str, tasks: List["Task"]) -> None:
         """
         Save the tasks of the network.
 
             Parameters
+                filename (str): Name of the task file
                 tasks (List["Task"]): List of tasks
 
             Returns
                 return None
         """
 
-        pd.DataFrame([(task.size, task.value, task.time) for task in tasks]).to_csv(self.log_path + f"\\tasks.csv", index=False)
+        pd.DataFrame([
+            (task.size, task.value, task.time) for task in tasks
+        ]).to_csv(self.log_path + f"\\{filename}", index=False)
 
     def count_collisions(self, agents_results: dict) -> dict:
         """
@@ -409,10 +368,40 @@ class AdHocNetwork:
                 return True
         return False
 
+    def join_tasks(self, group: List["Agent"]) -> List["Task"]:
+        """
+        Join the tasks of the group
+
+            Parameters
+                group (List["Agent"]): Join the tasks of the group
+
+            Returns
+                return List with the tasks joinedj
+        """
+
+        joined_tasks = []
+        for agent in group:
+            joined_tasks.extend(agent.tasks)
+        return joined_tasks
+
+    def assign_tasks(self, group: List["Agent"], tasks: List["Task"]) -> List["Task"]:
+        """
+        Assign the tasks to the agents in the group.
+
+            Parameters
+                group (List["Agent"]): Join the tasks of the group
+                tasks (List["Task"]): List of tasks
+
+            Returns
+                return List with the tasks joinedj
+        """
+
+        for agent in group:
+            agent.tasks = tasks
+
     def run(self) -> None:
         """
         Run the Ad Hoc Network.
-
 
             Parameters
                 None
@@ -421,62 +410,68 @@ class AdHocNetwork:
                 return None
         """
 
-        # Save tasks as a CSV file
-        self.save_tasks(self.tasks)
+        log_text = "Simulation stats\nAgents:\n"
 
-        log_text, iterations = "Simulation stats\nAgents:\n", 0
-
+        # Save the initial agents configuration
         for agent in self.graph.agents:
             log_text += self.graph.agents[agent].__str__() + "->" + str(self.graph.agents[agent].selected_tasks) + "\n"
 
-        # Assign the task to each agent
-        
+        # Assign the tasks to each agent
+        self.create_initial_tasks()
 
-        while self.tasks != []:
-            iterations += 1
-            self.assign_tasks(self.tasks)
-            agents_results = {}
-            for agent in self.graph.agents:
-                best_allocation_score, selected_tasks = self.graph.agents[agent].get_allocation_resources_score()
-                agents_results[agent] = dict()
-                agents_results[agent]["score"] = best_allocation_score
-                agents_results[agent]["selected_tasks"] = selected_tasks
-            tasks_counter = self.count_collisions(agents_results)
-            if self.check_collisions(tasks_counter) == True:
-                # Sort the tasks_counter in function of the number of collisions
-                sorted_selected_tasks = sorted(tasks_counter.items(), key=lambda selected_task: len(selected_task[1]), reverse=True)
-                # Select the task with more collisions
-                task_idx, task_agents = sorted_selected_tasks.pop(0)
-                # Sort tasks_agents in function of the value (size)
-                sorted_task_agents = sorted(task_agents, key=lambda agent: self.graph.agents[agent].value)
-                perfect_agent = False
-                # Check if exist the best agent for the task
-                for agent in sorted_task_agents:
-                    # Perfect case
-                    if self.graph.agents[agent].value == self.tasks[task_idx].size:
-                        self.graph.agents[agent].assign_task(self.tasks[task_idx])
-                        perfect_agent = True
-                        break
-                if perfect_agent == False:
-                    best_agent = sorted_task_agents.pop()
-                    self.graph.agents[best_agent].assign_task(self.tasks[task_idx])
-                # Remove the tasksk
-                self.tasks.pop(task_idx)
-            else:
-                for agent in self.graph.agents:
-                    if agents_results[agent]["score"] > 0:
-                        for task_idx in agents_results[agent]["selected_tasks"]:
-                            self.graph.agents[agent].assign_task(self.tasks[task_idx])
-                break
+        groups_cnt = 0
 
-        log_text += f"\nSimulation finished\nSeed ID: {str(self.seed_id)}\nIterations: {str(iterations)}\nAgents:\n"
+        for group in self.groups:
+            log_text += f"\nGroup: {groups_cnt}\n"
+            # Union each task of the group
+            joined_tasks, iterations = self.join_tasks(group), 0
+            # Save the joined tasks as a CSV file
+            self.save_tasks(f"task_group_{groups_cnt}.csv", joined_tasks)
+            while joined_tasks != []:
+                iterations += 1
+                self.assign_tasks(group, joined_tasks)
+                agents_results = {}
+                for agent in group:
+                    best_allocation_score, selected_tasks = agent.get_allocation_resources_score()
+                    agents_results[agent] = {
+                        "score" : best_allocation_score,
+                        "selected_tasks" : selected_tasks
+                    }
+                tasks_counter = self.count_collisions(agents_results)
+                if self.check_collisions(tasks_counter) == True:
+                    # Sort the tasks_counter in function of the number of collisions
+                    sorted_selected_tasks = sorted(tasks_counter.items(), key=lambda selected_task: len(selected_task[1]), reverse=True)
+                    # Select the task with more collisions
+                    task_idx, task_agents = sorted_selected_tasks.pop(0)
+                    # Sort tasks_agents in function of the value (size)
+                    sorted_task_agents = sorted(task_agents, key=lambda agent: agent.value)
+                    perfect_agent = False
+                    # Check if exist the best agent for the task
+                    for agent in sorted_task_agents:
+                        # Perfect case
+                        if agent.value == joined_tasks[task_idx].size:
+                            agent.assign_task(joined_tasks[task_idx])
+                            perfect_agent = True
+                            break
+                    if perfect_agent == False:
+                        best_agent = sorted_task_agents.pop()
+                        best_agent.assign_task(joined_tasks[task_idx])
+                    # Remove the tasksk
+                    joined_tasks.pop(task_idx)
+                else:
+                    for agent in group:
+                        if agents_results[agent]["score"] > 0:
+                            for task_idx in agents_results[agent]["selected_tasks"]:
+                                agent.assign_task(joined_tasks[task_idx])
+                    break
+            total_num_selected_tasks, total_score = 0, 0
+            for agent in group:
+                log_text += agent.__str__() + "->" + str(agent.selected_tasks) + "\n"
+                total_num_selected_tasks += len(agent.selected_tasks)
+                total_score += sum([task.value for task in agent.selected_tasks])
+            log_text += f"\nGeneral stats\nTotal score: {total_score}\nTotal number of tasks: {total_num_selected_tasks}\nIterations: {iterations}\nFinished\n\n"
+            groups_cnt += 1
 
-        total_num_selected_tasks, total_score = 0, 0
-        for agent in self.graph.agents:
-            log_text += self.graph.agents[agent].__str__() + "->" + str(self.graph.agents[agent].selected_tasks) + "\n"
-            total_num_selected_tasks += len(self.graph.agents[agent].selected_tasks)
-            total_score += sum([task.value for task in self.graph.agents[agent].selected_tasks])
-
-        log_text += f"\nGeneral stats\nTotal score: {total_score}\nTotal number of tasks: {total_num_selected_tasks}"
+        log_text += f"\nSimulation finished\nSeed ID: {str(self.seed_id)}"
 
         self.log(f"log.txt", log_text)

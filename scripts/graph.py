@@ -1,3 +1,4 @@
+from typing import List, Tuple
 from scripts.agent import Agent
 
 
@@ -36,6 +37,10 @@ class Graph:
             Get the maximum value of the agents in the graph.
         get_min_value(self) -> float:
             Get the minimum value of the agents in the graph.
+        create_group(self, start_value: str) -> List[list]:
+            Create group of bidirectional neighbors using the BFS.
+        create_groups(self) -> List[List["Agent"]]:
+            Create groups of bidirectional neighbors using the BFS.
     """
 
     def __init__(self) -> None:
@@ -227,3 +232,53 @@ class Graph:
         for agent_tag in self.agents:
             min_value = min(min_value, self.agents[agent_tag].value)
         return min_value
+
+    def create_group(self, start_value: str) -> Tuple[List["Agent"], List["Agent"]]:
+        """
+        Create group of bidirectional neighbors using the BFS.
+
+            Parameters
+                start_value (str): Initial agent
+
+            Returns
+                return List of agents of the same group and the visited agents
+                return None if the agent is not in the dict of agents
+        """
+
+        if start_value not in self.agents:
+            return
+
+        visited = set()
+        group = [self.agents[start_value]]
+        index = 0
+
+        while index < len(group):
+            agent = group[index]
+            index += 1
+            if agent not in visited:
+                # Save the neighbors
+                for neighbor in agent.neighbors:
+                    # Check the neighbors who have not been visited and have a two-way connection
+                    if (neighbor not in visited) and (neighbor not in group) and (agent.is_bidirectional(neighbor) == True):
+                        group.append(neighbor)
+                visited.add(agent)
+        return group, visited
+
+    def create_groups(self) -> List[List["Agent"]]:
+        """
+        Create groups of bidirectional neighbors using the BFS.
+
+            Parameters
+                None
+
+            Returns
+                return List of groups
+        """
+
+        groups, visited = [], set()
+        for agent in self.agents:
+            if self.agents[agent] not in visited:
+                group, aux_visited = self.create_group(agent)
+                groups.append(group)
+                visited = visited.union(aux_visited)
+        return groups

@@ -1,6 +1,7 @@
 from typing import List, Tuple
 import math, numpy as np
 
+
 class Agent:
     """
     A class to represent a agent.
@@ -39,6 +40,8 @@ class Agent:
             Add a new agent to the neighbors list.
         remove_neighbor(self, neighbor: "agent") -> None:
             Remove a agent from the neighbors list.
+        is_bidirectional(self, neighbor: "agent") -> bool:
+            Check if the agent is bidirectional.
         in_neighborhood(self, x_pos: int, y_pos: int) -> bool:
             Check if the other agent is inside the agent radius.
         brownian_motion(self, step_size: int) -> None:
@@ -116,6 +119,19 @@ class Agent:
 
         if neighbor in self.neighbors:
             self.neighbors.remove(neighbor)
+
+    def is_bidirectional(self, neighbor: "agent") -> bool:
+        """
+        Check if the agent is bidirectional.
+
+            Parameters
+                neighbor ("agent"): agent for remove from the neighbors list
+    
+            Returns
+                return None
+        """
+
+        return self in neighbor.neighbors
 
     def in_neighborhood(self, x_pos: int, y_pos: int) -> bool:
         """

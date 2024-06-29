@@ -104,5 +104,3 @@ class Generator:
             num2 = random.randint(min_value2, max_value2)
             pairs.add((num1, num2))
         return list(pairs)
-
-

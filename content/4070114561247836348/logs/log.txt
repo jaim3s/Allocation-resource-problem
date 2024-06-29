@@ -6,16 +6,28 @@ Agents:
 (3, 2)->[]
 (4, 1)->[]
 
-Simulation finished
-Seed ID: 4070114561247836348
-Iterations: 4
-Agents:
-(0, 0)->[(3, 97, 71), (2, 60, 74)]
-(1, 0)->[(2, 81, 86)]
-(2, 0)->[(4, 95, 115)]
-(3, 0)->[(2, 64, 94)]
-(4, 0)->[(1, 22, 112)]
+Group: 0
+(0, 0)->[(1, 22, 112), (1, 93, 65), (3, 20, 112)]
+(2, 1)->[(2, 81, 86), (1, 4, 61)]
 
 General stats
-Total score: 419
-Total number of tasks: 6
+Total score: 220
+Total number of tasks: 5
+Iterations: 4
+Finished
+
+
+Group: 1
+(1, 0)->[(2, 88, 103)]
+(3, 0)->[(2, 70, 82)]
+(4, 1)->[]
+
+General stats
+Total score: 158
+Total number of tasks: 2
+Iterations: 2
+Finished
+
+
+Simulation finished
+Seed ID: 4070114561247836348
