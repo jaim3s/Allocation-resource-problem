@@ -78,6 +78,12 @@ class AdHocNetwork:
             Join the tasks of the group
         assign_tasks(self, group: List["Agent"], tasks: List["Task"]) -> List["Task"]:
             Assign the tasks to the agents in the group.
+        merge(self, tasks: List["Task"], all_selected_tasks: List[tuple], left: int, mid: int, right: int):
+            Merge the lists of selected tasks under the conditions.
+        merge_sort_tasks(self, tasks: List["Task"], all_selected_tasks: List[tuple], begin: int, end: int) -> None:
+            Merge sort the selected tasks of the group of agents.
+        initialization(self) -> None:
+            Initialize the Ad Hoc Network.
         run(self) -> None:
             Run the Ad Hoc Network.
     """
@@ -98,20 +104,7 @@ class AdHocNetwork:
     def __init__(self, **kwargs: dict) -> None:
         # Validate the kwargs arguments
         self.validate_kwargs(kwargs, self.valid_kwargs)
-        # Create paths and folders
-        self.create_paths()
-        self.create_folders()
-        # Generate a random seed
-        if self.seed_id == -1:
-            self.seed_id = random.randrange(sys.maxsize)
-        random.seed(self.seed_id)
-        self.generator = Generator(self.num_agents, self.seed_id)
-        self.rows, self.cols = math.floor(self.height/self.height_span), math.floor(self.width/self.width_span)
-        self.grid = self.create_grid()
-        self.graph = self.create_graph()
-        self.install_graph(self.graph)
-        self.create_edges(self.graph)
-        self.visual_graph = VisualGraph(str(self.seed_id), self.cols+1, self.rows+1, self.graphs_path)
+        self.initialization()
 
     def validate_kwargs(self, kwargs: dict, valid_kwargs: dict) -> None:
         """
@@ -416,6 +409,131 @@ class AdHocNetwork:
         for agent in group:
             agent.tasks = tasks
 
+    def merge(self, tasks: List["Task"], all_selected_tasks: List[tuple], left: int, mid: int, right: int):
+        """
+        Merge the lists of selected tasks under the conditions.
+
+            Parameters
+                tasks (List["Task"]): List of tasks
+                all_selected_tasks (List[tuple]): The selected tasks
+                left (int): Initial index
+                mid (int): Mid index
+                right (int): Last index
+
+            Returns
+                return None
+        """
+
+        sub_list_1 = mid-left+1
+        sub_list_2 = right-mid
+
+        # Create temporal lists
+        left_list = [0]*sub_list_1
+        right_list = [0]*sub_list_2
+
+        # Copy data to temporal lists left_list[] and right_list[]
+        for i in range(sub_list_1):
+            left_list[i] = all_selected_tasks[left + i]
+        for j in range(sub_list_2):
+            right_list[j] = all_selected_tasks[mid + 1 + j]
+
+        idx_sub_list_1 = 0  # Initial index of first sub-array
+        idx_sub_list_2 = 0  # Initial index of second sub-array
+        idx_merged_list = left  # Initial index of merged array
+
+        # Merge the temporal lists back into all_selected_tasks[left..right]
+        while idx_sub_list_1 < sub_list_1 and idx_sub_list_2 < sub_list_2:
+            # Left task have more collisions than right task
+            if len(left_list[idx_sub_list_1][1]) > len(right_list[idx_sub_list_2][1]):
+                all_selected_tasks[idx_merged_list] = left_list[idx_sub_list_1]
+                idx_sub_list_1 += 1
+            # Same number of collisions
+            elif len(left_list[idx_sub_list_1][1]) == len(right_list[idx_sub_list_2][1]):
+                # Compare attributes
+                size_comparison = tasks[left_list[idx_sub_list_1][0]].size > tasks[right_list[idx_sub_list_2][0]].size
+                value_comparison = tasks[left_list[idx_sub_list_1][0]].value > tasks[right_list[idx_sub_list_2][0]].value
+                # The left task is better than the right task
+                if size_comparison == False and value_comparison == True:
+                    all_selected_tasks[idx_merged_list] = left_list[idx_sub_list_1]
+                    idx_sub_list_1 += 1
+                # The right task is better than the left task
+                elif size_comparison == True and value_comparison == False:
+                    all_selected_tasks[idx_merged_list] = right_list[idx_sub_list_2]
+                    idx_sub_list_2 += 1
+                else:
+                    all_selected_tasks[idx_merged_list] = left_list[idx_sub_list_1]
+                    idx_sub_list_1 += 1
+            else:
+                all_selected_tasks[idx_merged_list] = right_list[idx_sub_list_2]
+                idx_sub_list_2 += 1
+            idx_merged_list += 1
+
+        # Copy the remaining elements of left[], if any
+        while idx_sub_list_1 < sub_list_1:
+            all_selected_tasks[idx_merged_list] = left_list[idx_sub_list_1]
+            idx_sub_list_1 += 1
+            idx_merged_list += 1
+
+        # Copy the remaining elements of right[], if any
+        while idx_sub_list_2 < sub_list_2:
+            all_selected_tasks[idx_merged_list] = right_list[idx_sub_list_2]
+            idx_sub_list_2 += 1
+            idx_merged_list += 1
+
+    def merge_sort_tasks(self, tasks: List["Task"], all_selected_tasks: List[tuple], begin: int, end: int) -> None:
+        """
+        Merge sort the selected tasks of the group of agents.
+
+            Parameters
+                tasks (List["Task"]): List of tasks
+                all_selected_tasks (List[tuple]): The selected tasks
+                begin (int): Initial index
+                end (int): Last index
+
+            Returns
+                return None
+        """
+
+        if begin >= end:
+            return
+        mid = begin+(end-begin)//2
+        self.merge_sort_tasks(tasks, all_selected_tasks, begin, mid)
+        self.merge_sort_tasks(tasks, all_selected_tasks, mid+1, end)
+        self.merge(tasks, all_selected_tasks, begin, mid, end)
+
+    def initialization(self) -> None:
+        """
+        Initialize the Ad Hoc Network.
+
+            Parameters
+                None
+
+            Returns
+                return None
+        """
+
+        # Create paths and folders for save the content
+        self.create_paths()
+        self.create_folders()
+
+        # Generate and set random seed
+        if self.seed_id == -1:
+            self.seed_id = random.randrange(sys.maxsize)
+        random.seed(self.seed_id)
+
+        self.generator = Generator(self.num_agents, self.seed_id)
+        self.rows, self.cols = math.floor(self.height/self.height_span), math.floor(self.width/self.width_span)
+
+        # Create the grid, graph, and edges
+        self.grid = self.create_grid()
+        self.graph = self.create_graph()
+        self.install_graph(self.graph)
+        self.create_edges(self.graph)
+        self.visual_graph = VisualGraph(str(self.seed_id), self.cols+1, self.rows+1, self.graphs_path)
+
+        # Assign the initial tasks to each agent
+        self.create_initial_tasks()
+
     def run(self) -> None:
         """
         Run the Ad Hoc Network.
@@ -436,9 +554,6 @@ class AdHocNetwork:
         # Create the list of groups of agents
         groups = self.graph.create_groups()
 
-        # Assign the initial tasks to each agent
-        self.create_initial_tasks()
-
         self.visual_graph.show_visual_graph("network_1.png", groups)
 
         for i in range(self.iterations):
@@ -452,6 +567,7 @@ class AdHocNetwork:
                 # self.save_tasks(f"task_group_{groups_cnt}.csv", joined_tasks)
                 while joined_tasks != []:
                     iterations += 1
+                    # Assign the tasks to the agents of the same group
                     self.assign_tasks(group, joined_tasks)
                     agents_results = {}
                     for agent in group:
@@ -463,7 +579,9 @@ class AdHocNetwork:
                     tasks_counter = self.count_collisions(agents_results)
                     if self.check_collisions(tasks_counter) == True:
                         # Sort the tasks_counter in function of the number of collisions
-                        sorted_selected_tasks = sorted(tasks_counter.items(), key=lambda selected_task: len(selected_task[1]), reverse=True)
+                        all_selected_tasks = list(tasks_counter.items())
+                        self.merge_sort_tasks(joined_tasks, all_selected_tasks, 0, len(tasks_counter)-1)
+                        sorted_selected_tasks = all_selected_tasks
                         # Select the task with more collisions
                         task_idx, task_agents = sorted_selected_tasks.pop(0)
                         # Sort tasks_agents in function of the value (size)

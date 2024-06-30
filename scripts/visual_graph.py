@@ -102,7 +102,6 @@ class VisualGraph:
             color = colors[i]
             for agent in groups[i]:
                 # Add invisible points with labels
-                
 
                 x, y = agent.col+1, agent.row+1
 

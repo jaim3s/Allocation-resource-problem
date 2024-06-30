@@ -266,8 +266,8 @@ class Agent:
                 return Tuple with the best allocation resources score and the list of selected tasks
         """
 
-        dp = [0 for i in range(self.value+1)]
-        selected_tasks = [[False for _ in range(self.value+1)] for _ in range(len(self.tasks))]
+        dp = [0]*(self.value+1)
+        selected_tasks = [[False]*(self.value+1) for _ in range(len(self.tasks))]
         for i in range(1, len(self.tasks)+1):
             for w in range(self.value, 0, -1):
                 if self.tasks[i-1].size <= w and dp[w] < dp[w-self.tasks[i-1].size]+self.tasks[i-1].value:
