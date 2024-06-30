@@ -15,12 +15,8 @@ class VisualGraph:
             Limit of the x axis
         limit_y : int
             Limit of the y axis
-        groups : List[List["Agent"]]
-            List of groups of groups
         save_path : str
             Path for save the visual graph
-        filename : str
-            Name of the visual graph file
         colors : List[tuple]
             List of colors (RGB%)
 
@@ -35,14 +31,11 @@ class VisualGraph:
             Show the visual graph.
     """
 
-    def __init__(self, title: str, limit_x: int, limit_y: int, groups: List[List["Agent"]], save_path: str, filename: str) -> None:
+    def __init__(self, title: str, limit_x: int, limit_y: int, save_path: str) -> None:
         self.title = title 
         self.limit_x = limit_x
         self.limit_y = limit_y
-        self.groups = groups
         self.save_path = save_path
-        self.filename = filename
-        self.colors = self.generate_palette(len(self.groups))
 
     def generate_palette(self, n: int) -> List[tuple]:
         """
@@ -77,21 +70,24 @@ class VisualGraph:
         text.set_position((agent_col, 5))
         return text,
 
-    def show_visual_graph(self) -> None:
+    def show_visual_graph(self, filename: str, groups: List[List["Agent"]]) -> None:
         """
         Show the visual graph.
 
             Parameters
-                None
+                filename (str): Name of the visual graph file
+                groups (List[List["Agent"]]): List of groups of agents
 
             Returns
                 return None
         """
 
+        colors = self.generate_palette(len(groups))
+
         # Create a figure and axis
         fig, ax = plt.subplots()
 
-        ax.set_title(f"Network - {self.title}")
+        ax.set_title(f"{filename[:filename.find('.')].capitalize()} - {self.title}")
 
         # Set x and y axis
         ax.set_xlim(0, self.limit_x)
@@ -102,9 +98,9 @@ class VisualGraph:
         agents_text_nodes = []
 
         # Draw groups
-        for i in range(len(self.groups)):
-            color = self.colors[i]
-            for agent in self.groups[i]:
+        for i in range(len(groups)):
+            color = colors[i]
+            for agent in groups[i]:
                 # Add invisible points with labels
                 
 
@@ -119,12 +115,12 @@ class VisualGraph:
                     va="center", 
                     fontsize=12, 
                     color="black", 
-                    bbox=dict(facecolor=color, edgecolor="black", boxstyle="circle")
+                    bbox=dict(facecolor=color, edgecolor="black", boxstyle="circle", alpha=0.3)
                 )
 
                 agents_text_nodes.append(agent_text_node)
 
-                circle = plt.Circle((x, y), agent.radius, color="red", fill=False, linestyle="--", alpha=0.4)
+                circle = plt.Circle((x, y), agent.radius, color="red", fill=False, linestyle="--", alpha=0.3)
                 ax.add_artist(circle)
 
                 for neighbor in agent.neighbors:
@@ -135,7 +131,7 @@ class VisualGraph:
 
         plt.legend()
 
-        plt.savefig(self.save_path + f"\\{self.filename}")
+        plt.savefig(self.save_path + f"\\{filename}")
         
         plt.show()
 

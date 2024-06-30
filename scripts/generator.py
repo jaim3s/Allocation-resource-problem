@@ -14,8 +14,10 @@ class Generator:
 
         Methods
         -------
-
-        generate_unique_numbers(self, min_value: int, max_value: int) -> List[int]:
+        
+        generate_random_number(self) -> float:
+            Generate random number.
+        generate_unique_integer_numbers(self, min_value: int, max_value: int) -> List[int]:
             Generate random unique numbers.
         generate_integer_numbers(self, min_value: int, max_value: int) -> List[int]:
             Generate random integer numbers.
@@ -28,9 +30,21 @@ class Generator:
     def __init__(self, n: int, seed_id: int) -> None:
         self.n = n
         self.seed_id = seed_id
-        random.seed(self.seed_id)
 
-    def generate_unique_numbers(self, min_value: int, max_value: int) -> List[int]:
+    def generate_random_number(self) -> float:
+        """
+        Generate random number.
+
+            Parameters
+                None
+    
+            Returns
+                return Random number
+        """
+
+        return random.random()
+
+    def generate_unique_integer_numbers(self, min_value: int, max_value: int) -> List[int]:
         """
         Generate random unique numbers.
 

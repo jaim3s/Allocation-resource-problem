@@ -1,33 +1,187 @@
 Simulation stats
 Agents:
-(0, 5)->[]
-(1, 2)->[]
-(2, 4)->[]
+(0, 10)->[]
+(1, 7)->[]
+(2, 6)->[]
 (3, 2)->[]
-(4, 1)->[]
+(4, 10)->[]
+(5, 9)->[]
+(6, 3)->[]
+(7, 1)->[]
+(8, 10)->[]
+(9, 8)->[]
 
 Group: 0
-(0, 0)->[(1, 22, 112), (1, 93, 65), (3, 20, 112)]
-(2, 1)->[(2, 81, 86), (1, 4, 61)]
+(0, 1)->[(5, 36, 94), (4, 70, 82)]
 
 General stats
-Total score: 220
-Total number of tasks: 5
-Iterations: 4
+Total score: 106
+Total number of tasks: 2
+Iterations: 1
 Finished
 
 
 Group: 1
-(1, 0)->[(2, 88, 103)]
-(3, 0)->[(2, 70, 82)]
-(4, 1)->[]
+(1, 0)->[(3, 48, 113), (4, 51, 113)]
 
 General stats
-Total score: 158
+Total score: 99
 Total number of tasks: 2
-Iterations: 2
+Iterations: 1
 Finished
 
+
+Group: 2
+(2, 1)->[(2, 51, 108), (3, 95, 102)]
+
+General stats
+Total score: 146
+Total number of tasks: 2
+Iterations: 1
+Finished
+
+
+Group: 3
+(3, 0)->[(2, 14, 88)]
+
+General stats
+Total score: 14
+Total number of tasks: 1
+Iterations: 1
+Finished
+
+
+Group: 4
+(4, 0)->[(7, 21, 93), (3, 74, 64)]
+
+General stats
+Total score: 95
+Total number of tasks: 2
+Iterations: 1
+Finished
+
+
+Group: 5
+(5, 0)->[(8, 73, 94), (1, 49, 64)]
+
+General stats
+Total score: 122
+Total number of tasks: 2
+Iterations: 1
+Finished
+
+
+Group: 6
+(6, 0)->[(3, 77, 100)]
+
+General stats
+Total score: 77
+Total number of tasks: 1
+Iterations: 1
+Finished
+
+
+Group: 7
+(7, 1)->[]
+
+General stats
+Total score: 0
+Total number of tasks: 0
+Iterations: 1
+Finished
+
+
+Group: 8
+(8, 4)->[(1, 29, 77), (2, 77, 81), (3, 84, 79)]
+
+General stats
+Total score: 190
+Total number of tasks: 3
+Iterations: 1
+Finished
+
+
+Group: 9
+(9, 4)->[(1, 88, 117), (1, 42, 90), (2, 5, 103)]
+
+General stats
+Total score: 135
+Total number of tasks: 3
+Iterations: 1
+Finished
+
+
+Group: 0
+(0, 1)->[(5, 36, 94), (4, 70, 82)]
+(1, 0)->[(3, 48, 113), (4, 51, 113)]
+(3, 0)->[(2, 14, 88)]
+
+General stats
+Total score: 219
+Total number of tasks: 5
+Iterations: 1
+Finished
+
+
+Group: 1
+(2, 1)->[(2, 51, 108), (3, 95, 102)]
+
+General stats
+Total score: 146
+Total number of tasks: 2
+Iterations: 1
+Finished
+
+
+Group: 2
+(4, 0)->[(7, 21, 93), (3, 74, 64)]
+
+General stats
+Total score: 95
+Total number of tasks: 2
+Iterations: 1
+Finished
+
+
+Group: 3
+(5, 0)->[(8, 73, 94), (1, 49, 64)]
+
+General stats
+Total score: 122
+Total number of tasks: 2
+Iterations: 1
+Finished
+
+
+Group: 4
+(6, 0)->[(3, 77, 100)]
+
+General stats
+Total score: 77
+Total number of tasks: 1
+Iterations: 1
+Finished
+
+
+Group: 5
+(7, 1)->[]
+
+General stats
+Total score: 0
+Total number of tasks: 0
+Iterations: 1
+Finished
+
+
+Group: 6
+(8, 0)->[(1, 29, 77), (2, 77, 81), (3, 84, 79), (1, 42, 90), (3, 84, 79)]
+(9, 0)->[(1, 88, 117), (1, 42, 90), (2, 5, 103), (1, 88, 117), (1, 29, 77), (2, 77, 81)]
+
+General stats
+Total score: 645
+Total number of tasks: 11
+Iterations: 4
+Finished
 
 Simulation finished
 Seed ID: 4070114561247836348

@@ -14,8 +14,8 @@ def main():
     Run code.
     """
 
-    num_agents = 5
-    connection_probability = 1.0
+    num_agents = 10
+    connection_probability = 0.5
     program = Program()
     program.delete_folders()
     adhoc_network = AdHocNetwork(
@@ -27,10 +27,10 @@ def main():
         num_tasks = 5,
         connection_probability = connection_probability,
         mobility_model = "brownian_motion",
-        seed_id = 4070114561247836348
+        seed_id = 4070114561247836348,
+        iterations = 2,
     )
     adhoc_network.run()
-    adhoc_network.visual_graph.show_visual_graph()
     
 if __name__ == "__main__": 
     main()

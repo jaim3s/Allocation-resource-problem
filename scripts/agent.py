@@ -1,5 +1,5 @@
 from typing import List, Tuple
-import math, numpy as np
+import math, random, scripts.constants, numpy as np
 
 
 class Agent:
@@ -44,7 +44,11 @@ class Agent:
             Check if the agent is bidirectional.
         in_neighborhood(self, x_pos: int, y_pos: int) -> bool:
             Check if the other agent is inside the agent radius.
-        brownian_motion(self, step_size: int) -> None:
+        check_in_limits(self, rows: int, cols: int, new_row: int, new_col: int) -> bool:
+            Check if the new position is in the limits.
+        check_physical_collisions(self, agents: List["Agent"], new_row: int, new_col: int) -> bool:
+            Check if the agent collide with other agent.
+        brownian_motion(self, rows: int, cols: int, agents: List["Agent"], step_size: int) -> Tuple[int, int]:
             Brownian motion for the agent.
         update_position(self, new_row: int, new_col: int) -> None:
             Update the position of the agent.
@@ -147,11 +151,48 @@ class Agent:
 
         return math.sqrt((x_pos - self.col)**2 + (y_pos - self.row)**2) <= self.radius
 
-    def brownian_motion(self, step_size: int) -> Tuple[int, int]:
+    def check_in_limits(self, rows: int, cols: int, new_row: int, new_col: int) -> bool:
+        """
+        Check if the new position is in the limits.
+
+            Parameters
+                rows (int): Number of rows
+                cols (int): Number of columns
+                new_row (int): New row position
+                new_col (int): New col position
+
+            Returns
+                return True if the new position is in the limits otherwise False
+        """
+
+        return (0 <= new_row < rows) and (0 <= new_col < cols)
+
+    def check_physical_collisions(self, agents: List["Agent"], new_row: int, new_col: int) -> bool:
+        """
+        Check if the agent collide with other agent.
+
+            Parameters
+                agents (List["Agent"]): List of agents
+                new_row (int): New row position
+                new_col (int): New col position
+
+            Returns
+                return True if the agent collide with other agent otherwise False
+        """
+
+        for agent in agents:
+            if new_row == agent.row and new_col == agent.col:
+                return True
+        return False
+
+    def brownian_motion(self, rows: int, cols: int, agents: List["Agent"], step_size: int) -> Tuple[int, int]:
         """
         Brownian motion for the agent.
 
             Parameters
+                rows (int): Number of rows
+                cols (int): Number of columns
+                agents (List["Agent"]): List of agents
                 step_size (int): Size of each step
 
             Returns
@@ -159,9 +200,14 @@ class Agent:
         """
 
         # Perform Brownian motion simulation
-        dx = np.random.choice([-1, 1]) * step_size
-        dy = np.random.choice([-1, 1]) * step_size
-        return self.row+dx, self.col+dy
+        dx = random.choice(scripts.constants.MOBILITY_ACTIONS) * step_size
+        dy = random.choice(scripts.constants.MOBILITY_ACTIONS) * step_size
+        new_row, new_col = self.row+dx, self.col+dy
+        while (self.check_in_limits(rows, cols, new_row, new_col) == False) or (self.check_physical_collisions(agents, new_row, new_col) == True):
+            dx = random.choice(scripts.constants.MOBILITY_ACTIONS) * step_size
+            dy = random.choice(scripts.constants.MOBILITY_ACTIONS) * step_size
+            new_row, new_col = self.row+dx, self.col+dy
+        return new_row, new_col
 
     def update_position(self, new_row: int, new_col: int) -> None:
         """
@@ -175,8 +221,7 @@ class Agent:
                 return None
         """
 
-        self.row = new_row
-        self.col = new_col
+        self.row, self.col = new_row, new_col
 
     def assign_task(self, task: "Task") -> None:
         """
