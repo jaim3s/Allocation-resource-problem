@@ -1,7 +1,10 @@
-100.0
-100.0
-10.0
-10.0
-5
-0.5
-brownian_motion
+width = 100.0
+height = 100.0
+width_span = 10.0
+height_span = 10.0
+num_agents = 5
+num_tasks = 5
+connection_probability = 1.0
+mobility_model = brownian_motion
+seed_id = 4070114561247836348
+iterations = 10

@@ -1,187 +1,351 @@
 Simulation stats
+
+Rows: 10
+Columns: 10
+Number of agents: 5
+Number of tasks: 5
 Agents:
-(0, 10)->[]
-(1, 7)->[]
-(2, 6)->[]
-(3, 2)->[]
-(4, 10)->[]
-(5, 9)->[]
-(6, 3)->[]
-(7, 1)->[]
-(8, 10)->[]
-(9, 8)->[]
+
+(0, 5)
+(1, 2)
+(2, 4)
+(3, 2)
+(4, 1)
+
+##################################################
+
+Iteration: 0
+
+Number of groups: 2
 
 Group: 0
-(0, 1)->[(5, 36, 94), (4, 70, 82)]
+(0, 0)->[(1, 94, 90), (4, 64, 112)]
+(2, 0)->[(2, 81, 86), (2, 74, 104)]
 
-General stats
-Total score: 106
-Total number of tasks: 2
-Iterations: 1
-Finished
-
+Group stats
+Total score: 313
+Total number of tasks: 4
+Iterations: 4
 
 Group: 1
-(1, 0)->[(3, 48, 113), (4, 51, 113)]
+(1, 0)->[(2, 88, 103)]
+(3, 0)->[(2, 70, 82)]
+(4, 1)->[]
 
-General stats
-Total score: 99
+Group stats
+Total score: 158
 Total number of tasks: 2
-Iterations: 1
-Finished
+Iterations: 2
 
+##################################################
+
+Iteration: 1
+
+Number of groups: 3
+
+Group: 0
+(0, 0)->[(1, 94, 90), (4, 64, 112)]
+(2, 0)->[(2, 74, 104), (2, 81, 86)]
+
+Group stats
+Total score: 313
+Total number of tasks: 4
+Iterations: 4
+
+Group: 1
+(1, 0)->[(2, 88, 103)]
+(3, 0)->[(2, 70, 82)]
+
+Group stats
+Total score: 158
+Total number of tasks: 2
+Iterations: 2
 
 Group: 2
-(2, 1)->[(2, 51, 108), (3, 95, 102)]
+(4, 1)->[]
 
-General stats
-Total score: 146
-Total number of tasks: 2
-Iterations: 1
-Finished
-
-
-Group: 3
-(3, 0)->[(2, 14, 88)]
-
-General stats
-Total score: 14
-Total number of tasks: 1
-Iterations: 1
-Finished
-
-
-Group: 4
-(4, 0)->[(7, 21, 93), (3, 74, 64)]
-
-General stats
-Total score: 95
-Total number of tasks: 2
-Iterations: 1
-Finished
-
-
-Group: 5
-(5, 0)->[(8, 73, 94), (1, 49, 64)]
-
-General stats
-Total score: 122
-Total number of tasks: 2
-Iterations: 1
-Finished
-
-
-Group: 6
-(6, 0)->[(3, 77, 100)]
-
-General stats
-Total score: 77
-Total number of tasks: 1
-Iterations: 1
-Finished
-
-
-Group: 7
-(7, 1)->[]
-
-General stats
+Group stats
 Total score: 0
 Total number of tasks: 0
 Iterations: 1
-Finished
 
+##################################################
 
-Group: 8
-(8, 4)->[(1, 29, 77), (2, 77, 81), (3, 84, 79)]
+Iteration: 2
 
-General stats
-Total score: 190
-Total number of tasks: 3
-Iterations: 1
-Finished
-
-
-Group: 9
-(9, 4)->[(1, 88, 117), (1, 42, 90), (2, 5, 103)]
-
-General stats
-Total score: 135
-Total number of tasks: 3
-Iterations: 1
-Finished
-
+Number of groups: 3
 
 Group: 0
-(0, 1)->[(5, 36, 94), (4, 70, 82)]
-(1, 0)->[(3, 48, 113), (4, 51, 113)]
-(3, 0)->[(2, 14, 88)]
+(0, 0)->[(1, 94, 90), (1, 22, 112), (1, 22, 112), (1, 22, 112), (1, 22, 112)]
+(2, 0)->[(2, 81, 86), (2, 74, 104)]
 
-General stats
-Total score: 219
+Group stats
+Total score: 337
+Total number of tasks: 7
+Iterations: 4
+
+Group: 1
+(1, 0)->[(2, 88, 103)]
+
+Group stats
+Total score: 88
+Total number of tasks: 1
+Iterations: 1
+
+Group: 2
+(3, 0)->[(2, 70, 82)]
+(4, 1)->[]
+
+Group stats
+Total score: 70
+Total number of tasks: 1
+Iterations: 1
+
+##################################################
+
+Iteration: 3
+
+Number of groups: 3
+
+Group: 0
+(0, 0)->[(1, 94, 90), (1, 22, 112), (1, 22, 112), (1, 22, 112), (1, 22, 112)]
+(2, 0)->[(2, 74, 104), (2, 81, 86)]
+
+Group stats
+Total score: 337
+Total number of tasks: 7
+Iterations: 4
+
+Group: 1
+(1, 0)->[(2, 88, 103)]
+
+Group stats
+Total score: 88
+Total number of tasks: 1
+Iterations: 1
+
+Group: 2
+(3, 0)->[(2, 70, 82)]
+(4, 1)->[]
+
+Group stats
+Total score: 70
+Total number of tasks: 1
+Iterations: 1
+
+##################################################
+
+Iteration: 4
+
+Number of groups: 4
+
+Group: 0
+(0, 0)->[(1, 94, 90), (1, 22, 112), (1, 22, 112), (1, 22, 112), (1, 22, 112)]
+(2, 0)->[(2, 81, 86), (2, 74, 104)]
+
+Group stats
+Total score: 337
+Total number of tasks: 7
+Iterations: 4
+
+Group: 1
+(1, 0)->[(2, 88, 103)]
+
+Group stats
+Total score: 88
+Total number of tasks: 1
+Iterations: 1
+
+Group: 2
+(3, 0)->[(2, 70, 82)]
+
+Group stats
+Total score: 70
+Total number of tasks: 1
+Iterations: 1
+
+Group: 3
+(4, 1)->[]
+
+Group stats
+Total score: 0
+Total number of tasks: 0
+Iterations: 1
+
+##################################################
+
+Iteration: 5
+
+Number of groups: 3
+
+Group: 0
+(0, 0)->[(1, 94, 90), (1, 22, 112), (1, 22, 112), (1, 22, 112), (1, 22, 112)]
+(2, 0)->[(2, 74, 104), (2, 81, 86)]
+
+Group stats
+Total score: 337
+Total number of tasks: 7
+Iterations: 4
+
+Group: 1
+(1, 0)->[(2, 88, 103)]
+(3, 0)->[(2, 88, 103)]
+
+Group stats
+Total score: 176
+Total number of tasks: 2
+Iterations: 2
+
+Group: 2
+(4, 1)->[]
+
+Group stats
+Total score: 0
+Total number of tasks: 0
+Iterations: 1
+
+##################################################
+
+Iteration: 6
+
+Number of groups: 4
+
+Group: 0
+(0, 0)->[(1, 94, 90), (1, 22, 112), (1, 22, 112), (1, 22, 112), (1, 22, 112)]
+
+Group stats
+Total score: 182
 Total number of tasks: 5
 Iterations: 1
-Finished
-
 
 Group: 1
-(2, 1)->[(2, 51, 108), (3, 95, 102)]
+(1, 0)->[(2, 88, 103)]
+(3, 0)->[(2, 88, 103)]
 
-General stats
-Total score: 146
+Group stats
+Total score: 176
 Total number of tasks: 2
-Iterations: 1
-Finished
-
+Iterations: 2
 
 Group: 2
-(4, 0)->[(7, 21, 93), (3, 74, 64)]
+(2, 0)->[(2, 81, 86), (2, 74, 104)]
 
-General stats
-Total score: 95
+Group stats
+Total score: 155
 Total number of tasks: 2
 Iterations: 1
-Finished
-
 
 Group: 3
-(5, 0)->[(8, 73, 94), (1, 49, 64)]
+(4, 1)->[]
 
-General stats
-Total score: 122
-Total number of tasks: 2
-Iterations: 1
-Finished
-
-
-Group: 4
-(6, 0)->[(3, 77, 100)]
-
-General stats
-Total score: 77
-Total number of tasks: 1
-Iterations: 1
-Finished
-
-
-Group: 5
-(7, 1)->[]
-
-General stats
+Group stats
 Total score: 0
 Total number of tasks: 0
 Iterations: 1
-Finished
 
+##################################################
 
-Group: 6
-(8, 0)->[(1, 29, 77), (2, 77, 81), (3, 84, 79), (1, 42, 90), (3, 84, 79)]
-(9, 0)->[(1, 88, 117), (1, 42, 90), (2, 5, 103), (1, 88, 117), (1, 29, 77), (2, 77, 81)]
+Iteration: 7
 
-General stats
-Total score: 645
-Total number of tasks: 11
-Iterations: 4
-Finished
+Number of groups: 4
+
+Group: 0
+(0, 0)->[(1, 94, 90), (1, 94, 90), (1, 22, 112), (1, 22, 112), (1, 22, 112)]
+
+Group stats
+Total score: 254
+Total number of tasks: 5
+Iterations: 1
+
+Group: 1
+(1, 0)->[(2, 88, 103)]
+(3, 0)->[(2, 88, 103)]
+
+Group stats
+Total score: 176
+Total number of tasks: 2
+Iterations: 2
+
+Group: 2
+(2, 0)->[(2, 81, 86), (2, 81, 86)]
+
+Group stats
+Total score: 162
+Total number of tasks: 2
+Iterations: 1
+
+Group: 3
+(4, 1)->[]
+
+Group stats
+Total score: 0
+Total number of tasks: 0
+Iterations: 1
+
+##################################################
+
+Iteration: 8
+
+Number of groups: 3
+
+Group: 0
+(0, 0)->[(1, 94, 90), (1, 94, 90), (1, 94, 90), (1, 94, 90), (1, 22, 112)]
+
+Group stats
+Total score: 398
+Total number of tasks: 5
+Iterations: 1
+
+Group: 1
+(1, 0)->[(2, 88, 103)]
+(3, 0)->[(2, 88, 103)]
+(2, 0)->[(2, 88, 103), (2, 88, 103)]
+
+Group stats
+Total score: 352
+Total number of tasks: 4
+Iterations: 3
+
+Group: 2
+(4, 1)->[]
+
+Group stats
+Total score: 0
+Total number of tasks: 0
+Iterations: 1
+
+##################################################
+
+Iteration: 9
+
+Number of groups: 3
+
+Group: 0
+(0, 0)->[(1, 94, 90), (1, 94, 90), (1, 94, 90), (2, 88, 103)]
+(2, 0)->[(1, 94, 90), (1, 94, 90), (1, 94, 90), (1, 22, 112)]
+(3, 0)->[(1, 94, 90), (1, 94, 90)]
+
+Group stats
+Total score: 862
+Total number of tasks: 10
+Iterations: 9
+
+Group: 1
+(1, 0)->[(2, 88, 103)]
+
+Group stats
+Total score: 88
+Total number of tasks: 1
+Iterations: 1
+
+Group: 2
+(4, 1)->[]
+
+Group stats
+Total score: 0
+Total number of tasks: 0
+Iterations: 1
 
 Simulation finished
 Seed ID: 4070114561247836348
+Time: 1.9542787075042725

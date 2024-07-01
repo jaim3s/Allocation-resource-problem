@@ -21,9 +21,13 @@ class Agent:
             Row position of the agent
         col : int
             Column position of the agent
+        old_rows : List[int]
+            List of old row positions of the agent
+        old_cols : List[int]
+            List of old column positions of the agent
         tasks : list
             List of tasks
-        selected_tasks : list
+        selected_tasks : List["Task"]
             List of selected tasks
         state : int
             Define the state of the agent
@@ -69,6 +73,7 @@ class Agent:
         self.selected_tasks = []
         self.state = 0
         self.row, self.col = None, None
+        self.old_rows, self.old_cols = [], [] 
 
     def __str__(self) -> str:
         """
@@ -221,6 +226,9 @@ class Agent:
                 return None
         """
 
+        if self.row and self.col:
+            self.old_rows.append(self.row+1)
+            self.old_cols.append(self.col+1)
         self.row, self.col = new_row, new_col
 
     def assign_task(self, task: "Task") -> None:

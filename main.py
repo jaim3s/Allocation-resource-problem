@@ -14,22 +14,12 @@ def main():
     Run code.
     """
 
-    num_agents = 10
-    connection_probability = 0.5
+    num_agents = 5
+    connection_probability = 1.0
     program = Program()
     program.delete_folders()
-    adhoc_network = AdHocNetwork(
-        width = 100.0,
-        height = 100.0,
-        width_span = 10.0,
-        height_span = 10.0,
-        num_agents = num_agents,
-        num_tasks = 5,
-        connection_probability = connection_probability,
-        mobility_model = "brownian_motion",
-        seed_id = 4070114561247836348,
-        iterations = 2,
-    )
+    parameters = program.read_parameters("parameters1.txt")
+    adhoc_network = AdHocNetwork(**parameters)
     adhoc_network.run()
     
 if __name__ == "__main__": 

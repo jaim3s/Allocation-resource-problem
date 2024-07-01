@@ -4,7 +4,7 @@ from scripts.task import Task
 from scripts.generator import Generator
 from scripts.visual_graph import VisualGraph
 from typing import List
-import random, math, os, sys, scripts.constants, numpy as np, pandas as pd
+import time, random, math, os, sys, scripts.constants, numpy as np, pandas as pd
 
 
 class AdHocNetwork:
@@ -65,7 +65,7 @@ class AdHocNetwork:
         brownian_motion(self, step_size: int) -> None:
             Apply the brownian motion mobility model.
         create_tasks(self, min_size: int, max_size: int, min_value: int, max_value: int) -> List["Task"]:
-            Create tasks.
+            Create tasks objects.
         create_initial_tasks(self) -> None:
             Assign tasks to the agents.
         save_tasks(self, tasks, filename: str) -> None:
@@ -232,12 +232,11 @@ class AdHocNetwork:
 
         # Generate unique pairs of numbers
         unique_pairs = self.generator.generate_unique_pairs(0, self.rows-1, 0, self.cols-1)
-        for idx, agent_tag in enumerate(graph.agents):
+        for idx, agent in enumerate(graph.agents):
             # Assign the position to the agents and the grid 
             row, col = unique_pairs[idx]
-            graph.agents[agent_tag].row = row
-            graph.agents[agent_tag].col = col
-            self.grid.values[row][col] = agent_tag
+            graph.agents[agent].update_position(row, col)
+            self.grid.values[row][col] = agent
 
     def create_edges(self, graph: "Graph") -> None:
         """
@@ -288,7 +287,7 @@ class AdHocNetwork:
 
     def create_tasks(self, min_size: int, max_size: int, min_value: int, max_value: int, min_time: float, max_time: float) -> List["Task"]:
         """
-        Create tasks.
+        Create tasks objects.
 
             Parameters
                 min_size (int): Minimal size of tasks
@@ -392,6 +391,7 @@ class AdHocNetwork:
         joined_tasks = []
         for agent in group:
             joined_tasks.extend(agent.tasks)
+            joined_tasks.extend(agent.selected_tasks)
         return joined_tasks
 
     def assign_tasks(self, group: List["Agent"], tasks: List["Task"]) -> List["Task"]:
@@ -545,24 +545,30 @@ class AdHocNetwork:
                 return None
         """
 
-        log_text = "Simulation stats\nAgents:\n"
+        log_text = f"Simulation stats\n\nRows: {self.rows}\nColumns: {self.cols}\nNumber of agents: {self.num_agents}\nNumber of tasks: {self.num_tasks}\nAgents:\n\n"
 
-        # Save the initial agents configuration
+        # Save the initial agents stats
         for agent in self.graph.agents:
-            log_text += self.graph.agents[agent].__str__() + "->" + str(self.graph.agents[agent].selected_tasks) + "\n"
+            log_text += self.graph.agents[agent].__str__() + "\n"
+
+        start_time_simulation = time.time()
 
         # Create the list of groups of agents
         groups = self.graph.create_groups()
 
+        # Show the initial configuration of agents in the network
         self.visual_graph.show_visual_graph("network_1.png", groups)
 
         for i in range(self.iterations):
+            log_text += "\n"+"#"*50+f"\n\nIteration: {i}\n\nNumber of groups: {len(groups)}\n"
             groups_cnt = 0
-
             for group in groups:
-                log_text += f"\nGroup: {groups_cnt}\n"
+                log_text += f"\nGroup: {groups_cnt}\n"  
                 # Union each task of the group
                 joined_tasks, iterations = self.join_tasks(group), 0
+                for agent in group:
+                    agent.value += sum([task.size for task in agent.selected_tasks])
+                    agent.selected_tasks = []
                 # Save the joined tasks as a CSV file
                 # self.save_tasks(f"task_group_{groups_cnt}.csv", joined_tasks)
                 while joined_tasks != []:
@@ -578,7 +584,7 @@ class AdHocNetwork:
                         }
                     tasks_counter = self.count_collisions(agents_results)
                     if self.check_collisions(tasks_counter) == True:
-                        # Sort the tasks_counter in function of the number of collisions
+                        # Sort the tasks_counter in function of the number of collisions and attributes
                         all_selected_tasks = list(tasks_counter.items())
                         self.merge_sort_tasks(joined_tasks, all_selected_tasks, 0, len(tasks_counter)-1)
                         sorted_selected_tasks = all_selected_tasks
@@ -610,11 +616,12 @@ class AdHocNetwork:
                     log_text += agent.__str__() + "->" + str(agent.selected_tasks) + "\n"
                     total_num_selected_tasks += len(agent.selected_tasks)
                     total_score += sum([task.value for task in agent.selected_tasks])
-                log_text += f"\nGeneral stats\nTotal score: {total_score}\nTotal number of tasks: {total_num_selected_tasks}\nIterations: {iterations}\nFinished\n\n"
+                log_text += f"\nGroup stats\nTotal score: {total_score}\nTotal number of tasks: {total_num_selected_tasks}\nIterations: {iterations}\n"
                 groups_cnt += 1
 
             # Move the agents
-            self.brownian_motion(scripts.constants.STEP_SIZE)
+            if self.mobility_model == "brownian_motion":
+                self.brownian_motion(scripts.constants.STEP_SIZE)
 
             # Update the edges
             self.remove_edges(self.graph)
@@ -623,8 +630,9 @@ class AdHocNetwork:
             # Create new possible groups
             groups = self.graph.create_groups()
 
-        log_text += f"Simulation finished\nSeed ID: {str(self.seed_id)}"
+        log_text += f"\nSimulation finished\nSeed ID: {str(self.seed_id)}\nTime: {str(time.time() - start_time_simulation)}"
         
         self.log(f"log.txt", log_text)
 
         self.visual_graph.show_visual_graph(f"network_{self.iterations}.png", groups)
+        self.visual_graph.movement_graph(f"movement_{self.iterations}.png", groups)

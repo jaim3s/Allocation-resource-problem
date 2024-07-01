@@ -28,7 +28,7 @@ class VisualGraph:
         update_frame(frame: int, ) -> tuple: 
             Update the informatin of the next frame.
         show_visual_graph(self) -> None:
-            Show the visual graph.
+            Show and save the visual graph.
     """
 
     def __init__(self, title: str, limit_x: int, limit_y: int, save_path: str) -> None:
@@ -70,9 +70,48 @@ class VisualGraph:
         text.set_position((agent_col, 5))
         return text,
 
+    def movement_graph(self, filename: str, groups: List[List["Agent"]]) -> None:
+        """
+        Create and save the movement graph.
+
+            Parameters
+                filename (str): Name of the visual graph file
+                groups (List[List["Agent"]]): List of groups of agents
+
+            Returns
+                return None
+        """
+
+        colors = self.generate_palette(len(groups))
+
+        # Create a figure and axis
+        fig, ax = plt.subplots()
+
+        ax.set_title(f"{filename[:filename.find('.')].capitalize()} - {self.title}")
+
+        # Set x and y axis
+        ax.set_xlim(0, self.limit_x)
+        ax.set_ylim(0, self.limit_y)
+
+        ax.grid(True, which="both", linestyle="--", linewidth=0.5, color="gray")
+
+        agents_text_nodes = []
+
+        # Draw groups
+        for i in range(len(groups)):
+            color = colors[i]
+            for agent in groups[i]:
+                plt.plot(agent.old_cols, agent.old_rows, label=f"Group {i}", color=color)
+
+        plt.legend()
+
+        plt.savefig(self.save_path + f"\\{filename}")
+        
+        plt.show()
+
     def show_visual_graph(self, filename: str, groups: List[List["Agent"]]) -> None:
         """
-        Show the visual graph.
+        Show and save the visual graph.
 
             Parameters
                 filename (str): Name of the visual graph file

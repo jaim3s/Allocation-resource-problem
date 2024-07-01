@@ -1,6 +1,6 @@
-a = [1,2,3,4]
-for b in a:
-    if b % 2 == 0:
-        a.remove(b)
+class A:
+    def __init__(self, **kwargs):
+        print(kwargs)
 
-print(a)
+
+a = A(**{"width":2, "asd":3})
